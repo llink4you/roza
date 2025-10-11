@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Роза — блог, контент, сотрудничество</title>
+
+<!-- Шрифты -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+<!-- Bootstrap Icons (соц-иконки) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root{
+  /* Палитра */
+  --bg:#F8F5F1; --text:#2A2623; --muted:#8E857D;
+  --gold:#CFAF66; --gold-soft:rgba(207,175,102,.35); --chip:#FFFFFF;
+
+  --shadow:0 12px 36px rgba(143,118,94,.18);
+
+  /* Фон и размеры */
+  --bg-blur:10px;
+
+  /* «Роза» и аватар */
+  --brand-size: clamp(40px, 6.4vw, 88px);      /* размер титула «Роза» */
+  --avatar-size: clamp(360px, 56vmin, 560px);
+  --avatar-pos-x:50%;                           /* << сдвиг фото внутри круга по X */
+  --avatar-pos-y:68%;                           /* << сдвиг фото внутри круга по Y */
+  --ring-inset: 18px;                           /* кольцевой текст — внутрь от края */
+  --ring-font: 10px;                            /* базовый размер кольцевого текста */
+
+  /* Соц-кругляши */
+  --soc-size: 60px; --soc-gap: 16px;
+  --soc-glow: .35;                              /* интенсивность подсветки соцсетей (0–1) */
+  --pulse-scale: .06;                           /* амплитуда «дыхания» соцкнопок */
+
+  /* Кнопка доната */
+  --btn-width: min(520px, 86vw);
+  --btn-pad: 14px 22px;
+  --btn-font: clamp(20px, 4.2vw, 30px);         /* как «Роза» */
+  --btn-radius: 18px;
+  --btn-float: 10px;                            /* высота парения */
+
+  /* Луч-«маяк» из центра аватара */
+  --beam-speed: 3.6s;                           /* скорость вращения */
+  --beam-angle: 16deg;                          /* ширина клина света */
+  --beam-core: .85;                             /* яркость сердцевины (0–1) */
+
+  /* Изображение */
+  --photo:url('photo.jpg');                     /* положи файл рядом с index.html */
+}
+
+/* База */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  overflow:hidden /* всё в 1 экран */
+}
+a{color:inherit;text-decoration:none}
+
+/* Фон */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg::before{
+  content:"";position:absolute;inset:-6%;
+  background:var(--photo) center/cover no-repeat;
+  filter:blur(var(--bg-blur)) saturate(1.02) brightness(.98);
+  transform:scale(1.02)
+}
+.bg::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(1100px 60% at 50% 50%, rgba(255,255,255,.72) 0, rgba(255,255,255,.28) 55%, rgba(255,255,255,0) 100%)
+}
+
+/* Макет */
+.screen{position:relative;z-index:1;height:100vh;display:grid;grid-template-rows:32px 1fr}
+
+/* Бегущая строка */
+.ticker{background:#FFF;border-bottom:1px solid #EAE5DE;display:flex;align-items:center;overflow:hidden}
+.twrap{max-width:1120px;margin:0 auto;width:100%;padding:0 12px}
+.track{display:flex;gap:24px;white-space:nowrap;animation:marq 22s linear infinite}
+.tag{color:var(--muted);font-weight:800;letter-spacing:.2px;font-size:13px}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* HERO */
+.hero{display:grid;place-items:center;text-align:center}
+
+/* Титул — «Роза» (компактнее) */
+.brand{
+  font-family:"Great Vibes",cursive;color:#fff;
+  font-size:var(--brand-size);
+  line-height:1;margin:8px 0 6px;
+  text-shadow:0 2px 14px rgba(0,0,0,.14),0 0 28px rgba(207,175,102,.22)
+}
+
+/* Аватар */
+.avatar-link{display:block}
+.avatar{
+  --S: var(--avatar-size);
+  width:var(--S);height:var(--S);margin:6px auto 14px;border-radius:50%;position:relative;
+  background: var(--photo) var(--avatar-pos-x) var(--avatar-pos-y) / cover no-repeat, #EEE; /* << сдвиг фото */
+  box-shadow:0 0 0 18px rgba(207,175,102,.10), 0 16px 28px rgba(143,118,94,.22)
+}
+.avatar::before{
+  content:"";position:absolute;inset:-18px;border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(207,175,102,.24),rgba(207,175,102,0) 62%);
+  filter:blur(10px)
+}
+
+/* Тонкий вращающийся обод по краю (внешний) */
+.rim{
+  position:absolute;inset:-22px;border-radius:50%;
+  --w:24px;
+  background:conic-gradient(from 0deg, transparent 0 78%, rgba(255,255,255,.9) 86%, transparent 100%);
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - var(--w)), #000 0);
+          mask:radial-gradient(farthest-side, transparent calc(100% - var(--w)), #000 0);
+  animation:spin 8s linear infinite;mix-blend-mode:screen;filter:blur(2px)
+}
+
+/* Центровой «луч» по аватару (идёт из центра) */
+.beam{
+  position:absolute; inset:0; border-radius:50%;
+  background:
+    /* клин светового луча */
+    conic-gradient(from 0deg,
+      transparent 0deg,
+      rgba(255,255,255,0) calc(360deg - var(--beam-angle)),
+      rgba(255,255,255,var(--beam-core)) 360deg),
+    /* мягкое ядро в центре */
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,.25) 0%,
+      rgba(255,255,255,.12) 30%,
+      rgba(255,255,255,0) 60%);
+  mix-blend-mode:screen;
+  filter:blur(2px) saturate(1.05);
+  animation:beam-sweep var(--beam-speed) linear infinite
+}
+
+@keyframes spin{to{transform:rotate(1turn)}}
+@keyframes beam-sweep{to{transform:rotate(1turn)}}
+
+/* Кольцевой текст внутри круга (уменьшенный) */
+.ring{
+  position:absolute; inset: var(--ring-inset);
+  pointer-events:none; width: calc(100% - var(--ring-inset)*2); height: calc(100% - var(--ring-inset)*2);
+  animation:ringPulse 3s ease-in-out infinite
+}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.03);opacity:1}}
+.ring text{
+  font-family:"Cormorant Garamond",serif;font-weight:400;letter-spacing:.20em;fill:#fff;
+  font-size:calc(var(--ring-font) * .7) /* −30% */
+}
+
+/* Соц-кругляши — пульсация + подсветка */
+.socials{
+  width:min(1120px, 92vw); margin:8px auto 14px;
+  display:grid; grid-template-columns: repeat(4, 1fr); gap: var(--soc-gap)
+}
+.soc{
+  width:var(--soc-size);height:var(--soc-size);margin:0 auto;border-radius:50%;
+  background:var(--chip);border:1px solid #EDE6DC;
+  display:flex;align-items:center;justify-content:center;
+  font-size:calc(var(--soc-size) * 0.52);
+  position:relative;animation:socBreath 2.8s ease-in-out infinite;
+  box-shadow:0 0 0 0 rgba(207,175,102,0), 0 10px 22px rgba(143,118,94,.16)
+}
+@keyframes socBreath{
+  0%,100%{ transform:scale(1); box-shadow: 0 0 0 0 rgba(207,175,102,0), 0 10px 22px rgba(143,118,94,.16) }
+  50%{ transform:scale(calc(1 + var(--pulse-scale)));
+      box-shadow: 0 0 22px calc(12px * var(--soc-glow)) rgba(207,175,102,.35), 0 12px 26px rgba(143,118,94,.22) }
+}
+.soc.tg{color:#26A5E4}
+.soc.tw{color:#9146FF}
+.soc.yt{color:#FF0000}
+.soc.ig{color:#E4405F}
+
+/* Кнопка «Поддержать» — парит, глянец и подставка */
+.btn-wrap{position:relative;width:100%;display:flex;justify-content:center;align-items:center}
+.platform{
+  position:absolute;bottom:-6px;width:calc(var(--btn-width) * .82);height:18px;border-radius:999px;
+  background:radial-gradient(60% 120% at 50% 20%, rgba(0,0,0,.18), rgba(0,0,0,0) 70%);
+  filter:blur(6px);opacity:.6;z-index:0
+}
+.btn-donate{
+  position:relative;z-index:1;width:var(--btn-width);margin:8px auto 0;
+  appearance:none;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:var(--btn-pad);border-radius:var(--btn-radius);overflow:hidden;
+
+  /* тот же стиль шрифта, что у «Роза» */
+  font-family:"Great Vibes",cursive; font-weight:400; letter-spacing:.01em;
+  font-size:var(--btn-font); line-height:1.05; color:#2c2721;
+
+  background:linear-gradient(180deg,#FFFFFF 0%,#FDF8F3 100%); border:1px solid #EDE6DC;
+
+  transform:translateY(0);
+  box-shadow:
+    0 calc(var(--btn-float)) calc(22px + var(--btn-float)) rgba(143,118,94,.22),
+    0 2px 0 rgba(255,255,255,.9) inset;
+  transition:transform .25s ease, box-shadow .25s ease
+}
+.btn-donate::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:55%;
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0))
+}
+.btn-donate::after{
+  content:"";position:absolute;top:-120%;left:-30%;width:40%;height:340%;transform:rotate(25deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);
+  animation:shine 4s linear infinite
+}
+@keyframes shine{0%{left:-40%}100%{left:140%}}
+.btn-donate:hover{
+  transform:translateY(calc(-1 * var(--btn-float)));
+  box-shadow:
+    0 calc(var(--btn-float) + 6px) calc(26px + var(--btn-float)) rgba(143,118,94,.28),
+    0 2px 0 rgba(255,255,255,1) inset
+}
+.btn-donate i{font-size:1.05em}
+</style>
+</head>
+<body>
+
+<!-- Фон -->
+<div class="bg" aria-hidden="true"></div>
+
+<div class="screen">
+  <!-- Бегущая строка -->
+  <div class="ticker" aria-label="Инфо">
+    <div class="twrap">
+      <div class="track" role="marquee">
+        <span class="tag">#Рилсы&nbsp;по&nbsp;20&nbsp;млн</span>
+        <span class="tag">Самый большой охват по Уфе — 28&nbsp;млн</span>
+        <span class="tag">#Уфа</span>
+        <span class="tag">#Роза</span>
+        <span class="tag">#сотрудничество</span>
+        <!-- дубль для бесшовной прокрутки -->
+        <span class="tag">#Рилсы&nbsp;по&nbsp;20&nbsp;млн</span>
+        <span class="tag">Самый большой охват по Уфе — 28&nbsp;млн</span>
+        <span class="tag">#Уфа</span>
+        <span class="tag">#Роза</span>
+        <span class="tag">#сотрудничество</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero" role="banner">
+    <h1 class="brand">Роза</h1>
+
+    <a class="avatar-link" href="https://t.me/Roza_RS_Bot" target="_blank" rel="noopener" aria-label="Перейти в профиль">
+      <div class="avatar">
+        <!-- внешний тонкий обод -->
+        <div class="rim" aria-hidden="true"></div>
+        <!-- центральный луч (из центра по аватару) -->
+        <div class="beam" aria-hidden="true"></div>
+
+        <!-- кольцевой текст ВНУТРИ круга -->
+        <svg class="ring" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <defs><path id="innerCircle" d="M50,50 m-40,0 a40,40 0 1,1 80,0 a40,40 0 1,1 -80,0"/></defs>
+          <text><textPath href="#innerCircle" startOffset="0%">нажми на меня • нажми на меня • нажми на меня • нажми на меня</textPath></text>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Соц-сети: TG → Twitch → YouTube → Instagram -->
+    <nav class="socials" aria-label="Социальные сети">
+      <a class="soc tg" href="https://t.me/+bHfn0W83YSkwY2My" target="_blank" aria-label="Telegram"><i class="bi bi-telegram"></i></a>
+      <a class="soc tw" href="https://www.twitch.tv/roza_nuts" target="_blank" aria-label="Twitch"><i class="bi bi-twitch"></i></a>
+      <a class="soc yt" href="https://youtube.com/@rrrrrrrrrrrrrrrrrrrr_n?si=nEMT_UO_hM3JnlxG" target="_blank" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+      <a class="soc ig" href="https://www.instagram.com/roza_bloggerrr?utm_source=qr" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+    </nav>
+
+<!-- Кнопка доната — парящая с глянцем и подставкой -->
+<style>
+  /* Локальные фиксы кликабельности для этого блока */
+  .btn-wrap{position:relative; display:inline-block; z-index:10;}
+  .btn-donate{position:relative; z-index:2; display:inline-flex; align-items:center; gap:.5rem;
+              padding:.95rem 1.4rem; border-radius:999px; text-decoration:none; cursor:pointer;
+              pointer-events:auto;}
+  .platform{position:absolute; left:50%; transform:translateX(-50%); bottom:-12px;
+            width:140px; height:24px; border-radius:999px; filter:blur(8px); opacity:.35;
+            z-index:1; pointer-events:none;}
+</style>
+
+<div class="btn-wrap">
+  <a class="btn-donate"
+     href="https://www.donationalerts.com/r/roza_nuts"
+     target="_blank" rel="noopener">
+    <i class="bi bi-gift"></i> Поддержать меня
+  </a>
+  <div class="platform" aria-hidden="true"></div>
+</div>
+</header>
+</div>
+</body>
+</html>
